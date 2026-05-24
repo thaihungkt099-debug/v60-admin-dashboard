@@ -2,7 +2,6 @@ import streamlit as st
 import firebase_admin
 from firebase_admin import credentials, firestore
 import pandas as pd
-import json
 
 st.set_page_config(page_title="V60 MagnaRise - Admin", page_icon="📊", layout="wide")
 
@@ -18,27 +17,18 @@ st.markdown('<div class="sub-title">Hệ thống quản lý người dùng, phâ
 
 @st.cache_resource
 def init_firebase():
-    # Bước 1: Kiểm tra xem Firebase đã chạy chưa (Tránh lỗi khởi tạo đúp)
     try:
         return firebase_admin.get_app()
     except ValueError:
-        pass # Nếu chưa chạy, đi tiếp xuống Bước 2
+        pass 
         
-    # Bước 2: Đọc Két sắt và Khởi tạo an toàn
     try:
-        raw_key = st.secrets["firebase_key"]
-        
-        # Xử lý thông minh: Nếu là chuỗi thì dịch JSON, nếu là mảng thì dùng luôn
-        if isinstance(raw_key, str):
-            key_dict = json.loads(raw_key)
-        else:
-            key_dict = dict(raw_key)
-            
+        # Lấy trực tiếp nhóm [firebase] từ Két sắt và biến thành Từ điển, không dùng json nữa!
+        key_dict = dict(st.secrets["firebase"])
         cred = credentials.Certificate(key_dict)
         return firebase_admin.initialize_app(cred)
     except Exception as e:
-        # Lần này lỗi ở đâu hệ thống sẽ báo chính xác chữ ở đó
-        st.error(f"Lỗi Két sắt (Secrets): Vui lòng kiểm tra lại định dạng. Chi tiết kỹ thuật: {e}")
+        st.error(f"Lỗi Két sắt: {e}")
         return None
 
 app = init_firebase()
