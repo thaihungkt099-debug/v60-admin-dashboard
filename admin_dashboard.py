@@ -2,6 +2,7 @@ import streamlit as st
 import firebase_admin
 from firebase_admin import credentials, firestore
 import pandas as pd
+import json
 
 st.set_page_config(page_title="V60 MagnaRise - Admin", page_icon="📊", layout="wide")
 
@@ -16,12 +17,9 @@ st.markdown('<div class="main-title">📊 V60 MAGNARISE - TRẠM CHỈ HUY QUẢ
 st.markdown('<div class="sub-title">Hệ thống quản lý người dùng, phân quyền Premium và giám sát dữ liệu</div>', unsafe_allow_html=True)
 
 @st.cache_resource
-import json
-
-@st.cache_resource
 def init_firebase():
     try:
-        # Khi chạy trên Streamlit Cloud, hệ thống sẽ đọc két sắt "firebase_key"
+        # Hệ thống sẽ đọc chìa khóa bảo mật từ Két sắt (Secrets) của Streamlit
         key_dict = json.loads(st.secrets["firebase_key"])
         cred = credentials.Certificate(key_dict)
         return firebase_admin.initialize_app(cred)
