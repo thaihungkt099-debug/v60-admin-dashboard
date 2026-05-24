@@ -23,7 +23,6 @@ def init_firebase():
         pass 
         
     try:
-        # Lấy trực tiếp nhóm [firebase] từ Két sắt và biến thành Từ điển, không dùng json nữa!
         key_dict = dict(st.secrets["firebase"])
         cred = credentials.Certificate(key_dict)
         return firebase_admin.initialize_app(cred)
@@ -71,6 +70,7 @@ if app:
         st.markdown("---")
         st.subheader("🔐 Kích hoạt gói Premium (Thu phí)")
         
+        # Form nâng cấp quyền đã được đưa nút Submit vào đúng vị trí thụt lề
         with st.form("activation_form"):
             col_user, col_role = st.columns([2, 1])
             with col_user:
@@ -80,7 +80,9 @@ if app:
             with col_role:
                 selected_role = st.selectbox("Cấp quyền:", ["free", "premium"])
                 
-            if st.form_submit_button("⚡ Xác nhận"):
+            submit_btn = st.form_submit_button("⚡ Xác nhận")
+            
+            if submit_btn:
                 db.collection('users').document(selected_uid).set({'account_type': selected_role}, merge=True)
                 st.success(f"Cập nhật tài khoản sang {selected_role.upper()} thành công! Vui lòng tải lại trang.")
     else:
